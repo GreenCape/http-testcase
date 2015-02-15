@@ -1,0 +1,20 @@
+{
+    "name": "warmans/http-testcase",
+    "description": "PHPUnit testcase for e2e testing libraries that talk to web services.",
+    "require-dev": {
+        "phpunit/phpunit": "~4.5"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "warmans",
+            "email": "stefan.warman@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "HttpTestCase\\": "src"
+        }
+    }
+}
