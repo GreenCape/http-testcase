@@ -42,6 +42,9 @@ class Server
      */
     public function start()
     {
+        // Kill the web server when the process ends if not explicitly stopped
+        register_shutdown_function(array($this, 'stop'));
+
         // Command that starts the web server
         $command = sprintf('%s/http-playback --port %s >%s 2>&1 & echo $!', $this->binPath, $this->port, $this->serverLogPath);
 
@@ -55,16 +58,18 @@ class Server
 
         $this->pid = (int)$output[0];
 
-        // Kill the web server when the process ends if not explicitly stopped
-        register_shutdown_function(array($this, 'stop'));
-
         //wait for server to start... is there a better way?
         usleep(1000*100);
     }
 
+    /**
+     * Kill this server
+     */
     public function stop()
     {
-        system("kill {$this->pid} >/dev/null 2>&1");
+        if ($this->pid) {
+            passthru("kill {$this->pid} >/dev/null 2>&1");
+        }
     }
 
     /**
@@ -103,7 +108,7 @@ class Server
      * @param string $path
      * @return string
      */
-    public function getReplayUri($session, $path='')
+    public function getReplayUri($session, $path = '')
     {
         return 'http://localhost:'.$this->port.'/p/'.$session.'/'.$path;
     }
