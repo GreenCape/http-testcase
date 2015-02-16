@@ -3,7 +3,9 @@ HTTP Test Case
 PHPUnit test case to assist in testing HTTP clients libraries. The testcase can start a http server and enqueue
 a set of responses (a session) which can are replayed for HTTP requests to the server.
 
-A testcase will look like this: 
+HTTP serving is provided by: https://github.com/warmans/http-playback
+
+A test case will look like this:
 
 ```php
 <?php
@@ -49,4 +51,3 @@ class Test extends HttpTestCase
     }
 }
 ```
-

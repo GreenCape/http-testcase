@@ -14,14 +14,14 @@ class Server
     private $port;
 
     /**
-     * @var string
+     * @var resource
      */
-    private $serverLogPath;
+    private $proc;
 
     /**
-     * @var int
+     * @var array
      */
-    private $pid;
+    private $pipes = array();
 
     /**
      * @param $binPath
@@ -45,21 +45,25 @@ class Server
         // Kill the web server when the process ends if not explicitly stopped
         register_shutdown_function(array($this, 'stop'));
 
-        // Command that starts the web server
-        $command = sprintf('%s/http-playback --port %s >%s 2>&1 & echo $!', $this->binPath, $this->port, $this->serverLogPath);
+        $desc = array (0 => array ("pipe", "r"), 1 => array ("pipe", "w"));
 
-        // Execute the command and store the process ID
-        $output = array();
-        $status = 0;
-        exec($command, $output, $status);
-        if ($status != 0) {
-            throw new \RuntimeException('HTTP Server failed to start');
+        $this->proc = proc_open(
+            sprintf("%s/http-playback --port %s 2>&1", $this->binPath, $this->port),
+            $desc,
+            $this->pipes
+        );
+
+        foreach ($this->pipes as $pipe) {
+            stream_set_blocking($pipe, 0);
         }
 
-        $this->pid = (int)$output[0];
+        //ensure server has time to startup
+        usleep(1000 * 100);
 
-        //wait for server to start... is there a better way?
-        usleep(1000*100);
+        $status = proc_get_status($this->proc);
+        if (!$status['running']) {
+            throw new \RuntimeException("HTTP server failed to start. Output follows:\n".$this->getOutput());
+        }
     }
 
     /**
@@ -67,8 +71,34 @@ class Server
      */
     public function stop()
     {
-        if ($this->pid) {
-            passthru("kill {$this->pid} >/dev/null 2>&1");
+        if (!is_resource($this->proc)) {
+            return;
+        }
+
+        $status = proc_get_status($this->proc);
+        if($status['running'] == true) { //process ran too long, kill it
+
+            //close all pipes that are still open
+            foreach($this->pipes as $pipe) {
+                fclose($pipe);
+            }
+
+            //get the parent pid of the process we want to kill
+            $ppid = $status['pid'];
+
+            if (!$ppid) {
+                throw new \RuntimeException('Unknown server PID');
+            }
+
+            //use ps to get all the children of this process, and kill them
+            $pids = preg_split('/\s+/', `ps -o pid --no-heading --ppid $ppid`);
+
+            foreach($pids as $pid) {
+                if(is_numeric($pid)) {
+                    posix_kill($pid, 9); //9 is the SIGKILL signal
+                }
+            }
+            proc_close($this->proc);
         }
     }
 
@@ -80,6 +110,7 @@ class Server
      * @param string $body
      * @param array $headers
      * @param int $wait
+     * @throws \RuntimeException
      */
     public function enqueue($session, $status = 200, $body = "", $headers = array(), $wait = 0)
     {
@@ -98,7 +129,11 @@ class Server
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($req));
-        curl_exec($ch);
+        $msg = curl_exec($ch);
+
+        if (curl_getinfo($ch, CURLINFO_HTTP_CODE) !== 200) {
+            throw new \RuntimeException('Failed to enqueue response. Details follow: '.$msg);
+        }
     }
 
     /**
@@ -111,5 +146,15 @@ class Server
     public function getReplayUri($session, $path = '')
     {
         return 'http://localhost:'.$this->port.'/p/'.$session.'/'.$path;
+    }
+
+    /**
+     * Get the output of the webserver process
+     *
+     * @return string
+     */
+    public function getOutput()
+    {
+        return stream_get_contents($this->pipes[1]);
     }
 }
