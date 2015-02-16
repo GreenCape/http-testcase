@@ -74,7 +74,7 @@ class Server
         }
 
         $status = proc_get_status($this->proc);
-        if($status['running'] == true) { //process ran too long, kill it
+        if ($status['running'] == true) {
 
             //close all pipes that are still open
             foreach($this->pipes as $pipe) {
@@ -91,8 +91,8 @@ class Server
             //use ps to get all the children of this process, and kill them
             $pids = preg_split('/\s+/', `ps -o pid --no-heading --ppid $ppid`);
 
-            foreach($pids as $pid) {
-                if(is_numeric($pid)) {
+            foreach ($pids as $pid) {
+                if (is_numeric($pid)) {
                     posix_kill($pid, 9); //9 is the SIGKILL signal
                 }
             }
