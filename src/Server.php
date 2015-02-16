@@ -43,7 +43,7 @@ class Server
         // Kill the web server when the process ends if not explicitly stopped
         register_shutdown_function(array($this, 'stop'));
 
-        $desc = array (0 => array("pipe", "r"), 1 => array("pipe", "w"));
+        $desc = array (1 => array("file", sys_get_temp_dir().'/http-testcase.log', "w"));
 
         $this->proc = proc_open(
             sprintf("%s/http-playback --port %s 2>&1", $this->binPath, $this->port),
@@ -152,7 +152,7 @@ class Server
      */
     public function getOutput()
     {
-        return stream_get_contents($this->pipes[1]);
+        return file_get_contents(sys_get_temp_dir().'/http-testcase.log');
     }
 
     /**

@@ -41,4 +41,37 @@ class Test extends HttpTestCase
         $this->assertEquals('baz', $this->sendGet('http://localhost:8081/p/1/'));
         $this->assertEquals('cat', $this->sendGet('http://localhost:8081/p/1/'));
     }
+
+    public function testOneWayLoad()
+    {
+        $requests = 1000;
+
+        //in
+        $server = self::getServer('8081');
+        for ($i = 0; $i < $requests; $i++) {
+            $server->enqueue(1, 200, "foo", array());
+        }
+
+        //out
+        for ($i = 0; $i < $requests; $i++) {
+            if ('foo' !== ($res = $this->sendGet($server->getReplayUri(1)))) {
+                $this->fail('bad response: '.$res);
+            }
+        }
+    }
+
+    public function testAlternatingLoad()
+    {
+        $requests = 1000;
+
+        $server = self::getServer('8081');
+        for ($i = 0; $i < $requests; $i++) {
+            //in
+            $server->enqueue(1, 200, "foo", array());
+            //out
+            if ('foo' !== ($res = $this->sendGet($server->getReplayUri(1)))) {
+                $this->fail('bad response: '.$res);
+            }
+        }
+    }
 }
