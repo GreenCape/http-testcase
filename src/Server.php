@@ -65,8 +65,8 @@ class Server
         curl_exec($ch);
     }
 
-    public function getReplayUri($session)
+    public function getReplayUri($session, $path='')
     {
-        return 'http://localhost:'.$this->port.'/p/'.$session;
+        return 'http://localhost:'.$this->port.'/p/'.$session.'/'.$path;
     }
 }
