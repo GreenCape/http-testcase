@@ -43,7 +43,7 @@ class Server
         // Kill the web server when the process ends if not explicitly stopped
         register_shutdown_function(array($this, 'stop'));
 
-        $desc = array (0 => array ("pipe", "r"), 1 => array ("pipe", "w"));
+        $desc = array (0 => array("pipe", "r"), 1 => array("pipe", "w"));
 
         $this->proc = proc_open(
             sprintf("%s/http-playback --port %s 2>&1", $this->binPath, $this->port),
@@ -58,8 +58,7 @@ class Server
         //ensure server has time to startup
         usleep(1000 * 100);
 
-        $status = proc_get_status($this->proc);
-        if (!$status['running']) {
+        if (!$this->isRunning()) {
             throw new \RuntimeException("HTTP server failed to start. Output follows:\n".$this->getOutput());
         }
     }
@@ -130,7 +129,7 @@ class Server
         $msg = curl_exec($ch);
 
         if (curl_getinfo($ch, CURLINFO_HTTP_CODE) !== 200) {
-            throw new \RuntimeException('Failed to enqueue response. Details follow: '.$msg);
+            throw new \RuntimeException('Failed to enqueue response.'.($this->isRunning() ? '' : ' Server is not running!').'. Response was: '.$msg);
         }
     }
 
@@ -154,5 +153,17 @@ class Server
     public function getOutput()
     {
         return stream_get_contents($this->pipes[1]);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRunning()
+    {
+        if (!is_resource($this->proc)) {
+            return false;
+        }
+        $status = proc_get_status($this->proc);
+        return $status['running'];
     }
 }
