@@ -64,4 +64,9 @@ class Server
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($req));
         curl_exec($ch);
     }
+
+    public function getReplayUri($session)
+    {
+        return 'http://localhost:'.$this->port.'/p/'.$session;
+    }
 }
