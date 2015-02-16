@@ -3,14 +3,31 @@ namespace HttpTestCase;
 
 class Server
 {
+    /**
+     * @var string
+     */
     private $binPath;
 
+    /**
+     * @var int
+     */
     private $port;
 
+    /**
+     * @var string
+     */
     private $serverLogPath;
 
+    /**
+     * @var int
+     */
     private $pid;
 
+    /**
+     * @param $binPath
+     * @param int $port
+     * @param string $serverLogPath
+     */
     public function __construct($binPath, $port = 8888, $serverLogPath = '/dev/null')
     {
         $this->binPath = $binPath;
@@ -18,6 +35,11 @@ class Server
         $this->serverLogPath = $serverLogPath;
     }
 
+    /**
+     * Start the webserver
+     *
+     * @throws \RuntimeException
+     */
     public function start()
     {
         // Command that starts the web server
@@ -45,6 +67,15 @@ class Server
         system("kill {$this->pid} >/dev/null 2>&1");
     }
 
+    /**
+     * Add response to server session.
+     *
+     * @param string $session
+     * @param int $status
+     * @param string $body
+     * @param array $headers
+     * @param int $wait
+     */
     public function enqueue($session, $status = 200, $body = "", $headers = array(), $wait = 0)
     {
         $req = array(
@@ -65,6 +96,13 @@ class Server
         curl_exec($ch);
     }
 
+    /**
+     * Get the uri to replay a session
+     *
+     * @param string $session
+     * @param string $path
+     * @return string
+     */
     public function getReplayUri($session, $path='')
     {
         return 'http://localhost:'.$this->port.'/p/'.$session.'/'.$path;

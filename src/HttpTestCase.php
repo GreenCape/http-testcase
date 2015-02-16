@@ -7,12 +7,12 @@ class HttpTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $port
+     * @param string $logPath
      */
-    public static function startServer($port)
+    public static function startServer($port, $logPath = '/dev/null')
     {
-        self::$servers[$port] = new Server(__DIR__.'/../bin', $port);
+        self::$servers[$port] = new Server(__DIR__.'/../bin', $port, $logPath);
         self::$servers[$port]->start();
-
     }
 
     /**
@@ -24,6 +24,9 @@ class HttpTestCase extends \PHPUnit_Framework_TestCase
         return self::$servers[$port];
     }
 
+    /**
+     * Stop all running servers
+     */
     public static function stopServers()
     {
         if (count(self::$servers) > 0) {
