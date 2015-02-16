@@ -7,12 +7,13 @@ class HttpTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $port
-     * @param string $logPath
      */
-    public static function startServer($port, $logPath = '/dev/null')
+    public static function startServer($port)
     {
-        self::$servers[$port] = new Server(__DIR__.'/../bin', $port, $logPath);
+        self::$servers[$port] = new Server(__DIR__.'/../bin', $port);
         self::$servers[$port]->start();
+
+        return self::$servers[$port];
     }
 
     /**

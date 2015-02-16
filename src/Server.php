@@ -26,13 +26,11 @@ class Server
     /**
      * @param $binPath
      * @param int $port
-     * @param string $serverLogPath
      */
-    public function __construct($binPath, $port = 8888, $serverLogPath = '/dev/null')
+    public function __construct($binPath, $port = 8888)
     {
         $this->binPath = $binPath;
         $this->port = $port;
-        $this->serverLogPath = $serverLogPath;
     }
 
     /**
