@@ -92,7 +92,7 @@ class Server
 
             foreach ($pids as $pid) {
                 if (is_numeric($pid)) {
-                    exec("kill -9 $pid");
+                    exec("kill -9 $pid 2>&1 >/dev/null");
                 }
             }
             proc_close($this->proc);
