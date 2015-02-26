@@ -12,11 +12,11 @@ The testcase exposes the following methods:
 
 **startServer($port)**
 
-Start a server on the given port and return a Server instance.
+Start a server on the given port and return a `Server` instance.
 
 **getServer($port)**
 
-Get a Server instance for a server previously started using startServer().
+Get a Server instance for a server previously started using `startServer()`.
 
 **stopServers()**
 
@@ -25,8 +25,8 @@ so omitting a tearDown call to stopServers should not leave servers running.
 
 #### Server API
 
-Interactions with http playback servers are simplified using the Server instance which is returned from calls to 
-startServer() and getServer()
+Interactions with http playback servers are simplified using the `Server` instance which is returned from calls to 
+`startServer()` and `getServer()`
 
 **start()**
 
@@ -34,7 +34,7 @@ Start the server (generally only called by HttpTestCase::startServer).
 
 **stop()**
 
-Stop the server (generally only called by HttpTestCase::startServer).
+Stop the server (generally only called by `HttpTestCase::startServer()`).
 
 **enqueue($session, $status = 200, $body = "", $headers = array(), $wait = 0)**
 
