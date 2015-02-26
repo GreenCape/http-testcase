@@ -10,39 +10,39 @@ The HTTP server is written in golang. The source is available here: https://gith
 
 The testcase exposes the following methods: 
 
-### startServer($port)
+#### startServer($port)
 
 Start a server on the given port and return a Server instance.
 
-### getServer($port)
+#### getServer($port)
 
 Get a Server instance for a server previously started using startServer().
 
-### stopServers()
+#### stopServers()
 
 Tell all running servers to exit. Note that shutdown functions are automatically registered for Server instances
 so omitting a tearDown call to stopServers should not leave servers running.
 
-## Server API
+### Server API
 
 Interactions with http playback servers are simplified using the Server instance which is returned from calls to 
 startServer() and getServer()
 
-### start()
+#### start()
 
 Start the server (generally only called by HttpTestCase::startServer).
 
-### stop()
+#### stop()
 
 Stop the server (generally only called by HttpTestCase::startServer).
 
-### enqueue($session, $status = 200, $body = "", $headers = array(), $wait = 0)
+#### enqueue($session, $status = 200, $body = "", $headers = array(), $wait = 0)
 
 Add a response to a HTTP session. A session is just a named list of responses held within the server. Using 
 named sessions allows the tester to simulate different endpoints without requiring exact paths. If you don't care
 about segregated response queues for different pages just always use the same session name.
 
-### getReplayUri($session, $path)
+#### getReplayUri($session, $path)
 
 If you've enqueued some responses and just want the full playback URI you can use this method. e.g.
 
@@ -51,15 +51,15 @@ $server->enqueue("foo", 200); //setup a session
 $server->getReplayUri("foo", "/bar/baz"); // http://localhost:8080/p/foo/bar/baz - will return the configured response
 ```
 
-### getOutput()
+#### getOutput()
 
 Get the logfile output from the server as a string. Note that a server log is created in `sys_get_temp_dir().'/http-testcase.log'`
 
-### isRunning()
+#### isRunning()
 
 Check if the server is currently running.
 
-## Examples
+### Examples
 
 A test case will look like this (this one can be run from the project if dev dependencies are installed root using
 `./vendor/bin/phpunit example`)
