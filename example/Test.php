@@ -15,6 +15,9 @@ class Test extends HttpTestCase
         self::stopServers();
     }
 
+    /**
+     * Just send a HTTP GET request somewhere.
+     */
     protected function sendGet($host)
     {
         $ch = curl_init($host);
@@ -22,6 +25,9 @@ class Test extends HttpTestCase
         return curl_exec($ch);
     }
 
+    /**
+     * Enqueue and request a single response.
+     */
     public function testHttpServerReturnsConfiguredResponse()
     {
         $server = self::getServer('8081');
@@ -30,6 +36,10 @@ class Test extends HttpTestCase
         $this->assertEquals('bar', $this->sendGet('http://localhost:8081/p/1/'));
     }
 
+    /**
+     * Enqueue some responses then send some GET requests to the server and assert they were returned in the
+     * expected order.
+     */
     public function testHttpServerReturnsMultipleResponses()
     {
         $server = self::getServer('8081');
@@ -42,6 +52,9 @@ class Test extends HttpTestCase
         $this->assertEquals('cat', $this->sendGet('http://localhost:8081/p/1/'));
     }
 
+    /**
+     * Enqueue 1000 responses then request them all.
+     */
     public function testOneWayLoad()
     {
         $requests = 1000;
@@ -60,6 +73,9 @@ class Test extends HttpTestCase
         }
     }
 
+    /**
+     * Enqueue and request 1000 responses
+     */
     public function testAlternatingLoad()
     {
         $requests = 1000;

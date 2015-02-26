@@ -102,11 +102,11 @@ class Server
     /**
      * Add response to server session.
      *
-     * @param string $session
-     * @param int $status
-     * @param string $body
-     * @param array $headers
-     * @param int $wait
+     * @param string $session named session to add response to.
+     * @param int $status HTTP response status code
+     * @param string $body HTTP response body
+     * @param array $headers HTTP response headers (name => value pairs)
+     * @param int $wait milliseconds to wait before returning response when requested (simulate slow response)
      * @throws \RuntimeException
      */
     public function enqueue($session, $status = 200, $body = "", $headers = array(), $wait = 0)

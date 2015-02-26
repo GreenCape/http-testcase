@@ -6,7 +6,10 @@ class HttpTestCase extends \PHPUnit_Framework_TestCase
     public static $servers = array();
 
     /**
+     * Start a webserver on the given port and return a Server instance.
+     *
      * @param string $port
+     * @return Server
      */
     public static function startServer($port)
     {
@@ -17,6 +20,8 @@ class HttpTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Get a Server instance for a webserver previously started using startServer()
+     *
      * @param string $port
      * @return Server
      */
@@ -26,7 +31,8 @@ class HttpTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Stop all running servers
+     * Tell all running servers to exit. Note that shutdown functions are automatically registered for Server instances
+     * so omitting a tearDown call to stopServers should not leave servers running.
      */
     public static function stopServers()
     {
