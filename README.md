@@ -30,7 +30,7 @@ Interactions with http playback servers are simplified using the `Server` instan
 
 **start()**
 
-Start the server (generally only called by HttpTestCase::startServer).
+Start the server (generally only called by `HttpTestCase::startServer`).
 
 **stop()**
 
